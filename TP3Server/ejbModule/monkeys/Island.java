@@ -11,6 +11,7 @@ import javax.persistence.Id;
 public class Island {
 	
 	private int id;
+	
 	private int[][] map;
 
 	public Island() {
