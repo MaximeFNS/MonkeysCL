@@ -28,7 +28,7 @@ import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import guybrush.view.Fenetre;
 
 /**
- * @author Mickael Clavreul
+ * @author Alban Débarre
  */
 public class Monkeys implements MessageListener{
 	
