@@ -1,5 +1,7 @@
 package monkeys;
 
+import java.util.HashMap;
+
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -49,4 +51,24 @@ public class Communication implements CommunicationLocal {
 		}
     	context.createProducer().send(topic, message);
     }
+
+	@Override
+	public void sendMonkeys(HashMap<Integer,Monkey> monkeys) {
+		monkeys.forEach((k,v) -> {
+			StreamMessage message = context.createStreamMessage();
+			try {
+				message.setStringProperty("id", String.valueOf(v.getId()));
+				message.setJMSType("object");
+				message.writeInt(v.getPosX());
+				message.writeInt(v.getPosY());
+				message.writeInt(v.getSpeed());
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			context.createProducer().send(topic, message);
+		});
+		
+		
+	}
 }

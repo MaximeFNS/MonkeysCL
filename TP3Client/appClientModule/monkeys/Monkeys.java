@@ -28,7 +28,7 @@ import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import guybrush.view.Fenetre;
 
 /**
- * @author Alban Débarre
+ * @author Mickael Clavreul
  */
 public class Monkeys implements MessageListener{
 	
@@ -49,6 +49,7 @@ public class Monkeys implements MessageListener{
 		MIRemote rw = lookup();
 		
 		monkeys.subscribeTopic(monkeys);
+		System.out.println("Je suis passé ici");
 		pirate = rw.subscribe("1");
 
 		
@@ -65,7 +66,7 @@ public class Monkeys implements MessageListener{
 		props.put("remote.connections","default");
 		props.put("remote.connection.default.host","localhost");
 		props.put("remote.connection.default.port","8080");
-		props.put("remote.connection.default.username","afonsoma");
+		props.put("remote.connection.default.username","etudiant");
 		props.put("remote.connection.default.password","network");
 		
 		EJBClientConfiguration clientConfiguration = new PropertiesBasedEJBClientConfiguration(props);
@@ -91,7 +92,7 @@ public class Monkeys implements MessageListener{
 			String topicUri = props.getProperty("topicURI");
 			Topic topic = (Topic) context.lookup(topicUri);
 			
-			TopicConnection topicConnection = tcf.createTopicConnection("afonsoma", "network");
+			TopicConnection topicConnection = tcf.createTopicConnection("etudiant", "network");
 			String idString = "" + monkeys.hashCode();
 			topicConnection.setClientID(String.valueOf(idString));
 			TopicSession topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -134,7 +135,18 @@ public class Monkeys implements MessageListener{
 				
 				fenetre.creationCarte(map);
 				fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
+				
+				
+				
+			} else if (message.getJMSType().contains("object")) {
+				StreamMessage streamMessage = (StreamMessage) message;
+				int id = streamMessage.getIntProperty("id");
+				int posX = streamMessage.readInt();
+				int posY = streamMessage.readInt();
+				fenetre.creationEMonkey(id, posX, posY);
 			}
+			
+			
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}

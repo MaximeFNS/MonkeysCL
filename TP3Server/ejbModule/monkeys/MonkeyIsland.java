@@ -1,5 +1,7 @@
 package monkeys;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.EJB;
@@ -22,6 +24,8 @@ public class MonkeyIsland implements MIRemote {
 	private Pirate pirate;
 	
 	private Element myElement;
+	
+	private HashMap<Integer,Monkey> monkeys;
 	
 	@EJB
 	Configuration configuration;
@@ -70,7 +74,7 @@ public class MonkeyIsland implements MIRemote {
 		int j = 1;
 		int x = 0;
 		int y = 0;
-		pirate = new Pirate(j, x, y, 100);
+		
 		while(retour) {
 			myElement = em.find(Element.class, j);
 			if (myElement != null) {
@@ -80,7 +84,7 @@ public class MonkeyIsland implements MIRemote {
 				retour = false;
 			}
 		}
-		
+		pirate = new Pirate(j, x, y, 100);
 		pirate.setId(j);
 		Random random = new Random();
 		
@@ -96,6 +100,59 @@ public class MonkeyIsland implements MIRemote {
 		e.setType("Pirate");
 		
 		em.persist(e);
- 
+		
+		
+		createMonkey();
+		createMonkey();
+		createMonkey();
+		createMonkey();
+		communication.sendMonkeys(monkeys);
 	}
+	
+	private void createMonkey() {
+		boolean retour = true;
+		int j = 1;
+		
+		while(retour) {
+			myElement = em.find(Element.class, j);
+			if (myElement != null) {
+				if (myElement.getType().contentEquals("Monkey")) {
+					monkeys.put(j, (Monkey) myElement);
+				}
+				j++;
+		}
+			else {
+				retour = false;
+			}
+		}
+		int[] position = positionAleatoire();
+		Monkey monkey = new Monkey(j, position[0], position[1], 50);
+		monkey.setType("Monkey");
+		monkeys.put(j,monkey);
+		System.out.println("Singe : " + monkeys.get(j));
+		em.persist(monkey);
+	}
+	
+	private int[] positionAleatoire() {
+		Random random = new Random();
+		int[] result = new int[2];
+		System.out.println("Iciiiiiiiiiii");
+		System.out.println(random.nextInt(8)+1);
+		int x = random.nextInt(8)+1;
+		int y = random.nextInt(8)+1;
+		if(monkeys != null) {
+			monkeys.forEach((k,v) -> {
+				if(v.getPosX() == x && v.getPosY() == y) {
+					positionAleatoire();
+				} 
+			});
+		} else {
+			result[0] = x;
+			result[1] = y;
+		}
+		
+		return result;
+	}
+	
+	
 }
