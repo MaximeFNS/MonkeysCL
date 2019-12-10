@@ -49,7 +49,6 @@ public class Monkeys implements MessageListener{
 		MIRemote rw = lookup();
 		
 		monkeys.subscribeTopic(monkeys);
-		System.out.println("Je suis passé ici");
 		pirate = rw.subscribe("1");
 
 		
@@ -66,7 +65,7 @@ public class Monkeys implements MessageListener{
 		props.put("remote.connections","default");
 		props.put("remote.connection.default.host","localhost");
 		props.put("remote.connection.default.port","8080");
-		props.put("remote.connection.default.username","etudiant");
+		props.put("remote.connection.default.username","afonsoma");
 		props.put("remote.connection.default.password","network");
 		
 		EJBClientConfiguration clientConfiguration = new PropertiesBasedEJBClientConfiguration(props);
@@ -92,7 +91,7 @@ public class Monkeys implements MessageListener{
 			String topicUri = props.getProperty("topicURI");
 			Topic topic = (Topic) context.lookup(topicUri);
 			
-			TopicConnection topicConnection = tcf.createTopicConnection("etudiant", "network");
+			TopicConnection topicConnection = tcf.createTopicConnection("afonsoma", "network");
 			String idString = "" + monkeys.hashCode();
 			topicConnection.setClientID(String.valueOf(idString));
 			TopicSession topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);

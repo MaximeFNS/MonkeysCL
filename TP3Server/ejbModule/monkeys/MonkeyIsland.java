@@ -25,7 +25,7 @@ public class MonkeyIsland implements MIRemote {
 	
 	private Element myElement;
 	
-	private HashMap<Integer,Monkey> monkeys;
+	private HashMap<Integer,Monkey> monkeys = new HashMap<Integer,Monkey>();
 	
 	@EJB
 	Configuration configuration;
@@ -111,46 +111,51 @@ public class MonkeyIsland implements MIRemote {
 	
 	private void createMonkey() {
 		boolean retour = true;
-		int j = 1;
+		Integer j = 2;
 		
 		while(retour) {
 			myElement = em.find(Element.class, j);
 			if (myElement != null) {
-				if (myElement.getType().contentEquals("Monkey")) {
-					monkeys.put(j, (Monkey) myElement);
-				}
 				j++;
-		}
+			}
 			else {
 				retour = false;
 			}
 		}
+		System.out.println("------>"+j);
 		int[] position = positionAleatoire();
 		Monkey monkey = new Monkey(j, position[0], position[1], 50);
 		monkey.setType("Monkey");
-		monkeys.put(j,monkey);
+		monkeys.putIfAbsent(j,monkey);
 		System.out.println("Singe : " + monkeys.get(j));
-		em.persist(monkey);
+		System.out.println("Singe x : " + monkey.getPosX());
+		System.out.println("Singe y : " + monkey.getPosY());
+		
+		Element e = new Element();
+		
+		e.setPosX(monkey.getPosX());
+		e.setPosY(monkey.getPosY());
+		e.setType("Monkey");
+		em.persist(e);
 	}
 	
 	private int[] positionAleatoire() {
 		Random random = new Random();
 		int[] result = new int[2];
-		System.out.println("Iciiiiiiiiiii");
-		System.out.println(random.nextInt(8)+1);
 		int x = random.nextInt(8)+1;
 		int y = random.nextInt(8)+1;
+		System.out.println("Aléa x:" +x);
+		System.out.println("Aléa x:" +y);
 		if(monkeys != null) {
 			monkeys.forEach((k,v) -> {
 				if(v.getPosX() == x && v.getPosY() == y) {
 					positionAleatoire();
 				} 
 			});
-		} else {
-			result[0] = x;
-			result[1] = y;
 		}
 		
+		result[0] = x;
+		result[1] = y;
 		return result;
 	}
 	
