@@ -1,4 +1,6 @@
 package monkeys;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -33,7 +35,7 @@ import guybrush.view.Fenetre;
 public class Monkeys implements MessageListener{
 	
 	static Monkeys monkeys;
-	
+	static Keychecker kc = new Keychecker();
 	private Properties props;
 	
 	private static Fenetre fenetre;
@@ -49,13 +51,42 @@ public class Monkeys implements MessageListener{
 		MIRemote rw = lookup();
 		
 		monkeys.subscribeTopic(monkeys);
+		System.out.println("Je suis passé ici");
 		pirate = rw.subscribe("1");
-
+		boolean ok = true;
+		while (ok) {
+			
+			switch(kc.code) {
+			  case 37:
+				  pirate.setPosX(pirate.getPosX()-1);
+				  rw.move(String.valueOf(pirate.getId()), "-1-0");
+				  kc.code = 0;
+			    break;
+			  case 38:
+				  pirate.setPosY(pirate.getPosY()-1);
+				  rw.move(String.valueOf(pirate.getId()), "0-1");
+				  kc.code = 0;
+			    break;
+			  case 39:
+				  pirate.setPosX(pirate.getPosX()+1);
+				  rw.move(String.valueOf(pirate.getId()), "1-0");
+				  kc.code = 0;
+				    break;
+			  case 40:
+				  pirate.setPosY(pirate.getPosY()+1);
+				  rw.move(String.valueOf(pirate.getId()), "0--1");
+				  kc.code = 0;
+				    break;
+			  default:
+			}
+			
+		}
 		
 	}
 
 	public Monkeys() {
 		super();
+		fenetre.addKeyListener(kc);
 	}
 	
 	private static MIRemote lookup() throws Exception {
@@ -143,8 +174,13 @@ public class Monkeys implements MessageListener{
 				int posX = streamMessage.readInt();
 				int posY = streamMessage.readInt();
 				fenetre.creationEMonkey(id, posX, posY);
-			}
-			
+			}	else if(message.getJMSType().contains("move")) {
+				String newMove = "";
+				StreamMessage streamMessage = (StreamMessage) message;
+				newMove = streamMessage.readString();
+					fenetre.suppressionPirate(Integer.valueOf(message.getStringProperty("id")));
+					fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());		
+			}	
 			
 		} catch (JMSException e) {
 			e.printStackTrace();
@@ -161,4 +197,20 @@ public class Monkeys implements MessageListener{
 		});
 	}
 
+}
+class Keychecker extends KeyAdapter {
+
+	int code;
+	
+    @Override
+    public void keyPressed(KeyEvent event) {
+
+    char ch = event.getKeyChar();
+    int s = event.getKeyCode();
+    
+    code = s;
+    
+    System.out.println("code " + code);
+    
+    }
 }

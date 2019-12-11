@@ -25,6 +25,8 @@ public class MonkeyIsland implements MIRemote {
 	
 	private Element myElement;
 	
+	private HashMap<Integer, Pirate> pirates = new HashMap<>();
+	
 	private HashMap<Integer,Monkey> monkeys = new HashMap<Integer,Monkey>();
 	
 	@EJB
@@ -52,6 +54,43 @@ public class MonkeyIsland implements MIRemote {
 		
 	}
 
+	@Override
+	public void move(String id, String deplacement) {
+		int idInt = Integer.valueOf(id);
+		
+		Pirate newPirate = pirates.get(idInt);
+		String requete = "";
+		switch(deplacement) {
+		  case "-1-0":
+			  newPirate.setPosX(newPirate.getPosX()-1);
+			  requete = "UPDATE Element SET POSX = "+newPirate.getPosX()+ " WHERE ID = " + newPirate.getId();
+		    break;
+		  case "0-1":
+			  newPirate.setPosY(newPirate.getPosY()-1);
+			  requete = "UPDATE Element SET POSY = "+newPirate.getPosY()+ " WHERE ID = " + newPirate.getId();
+		    break;
+		  case "1-0":
+			  newPirate.setPosX(newPirate.getPosX()+1);
+			  requete = "UPDATE Element SET POSX = "+newPirate.getPosX()+ " WHERE ID = " + newPirate.getId();
+			    break;
+		  case "0--1":
+			  newPirate.setPosY(newPirate.getPosY()+1);
+			  requete = "UPDATE Element SET POSY = "+newPirate.getPosY()+ " WHERE ID = " + newPirate.getId();
+			    break;
+		  default:
+		}
+		pirates.replace(idInt, newPirate);
+		
+		Element toUpdate = new Element();
+		toUpdate.setId(newPirate.getId());
+		toUpdate.setPosX(newPirate.getPosX());
+		toUpdate.setPosY(newPirate.getPosY());
+		toUpdate.setType("Pirate");
+		em.merge(toUpdate);
+		communication.sendPirate(deplacement, id);
+		
+	}
+	
 	private void newGame(int id) {
 		
 		myLand = em.find(Island.class, id);
@@ -71,10 +110,10 @@ public class MonkeyIsland implements MIRemote {
 			
 		}
 		boolean retour = true;
-		int j = 1;
+		int j = 2;
 		int x = 0;
 		int y = 0;
-		
+		pirate = new Pirate(j, x, y, 100);
 		while(retour) {
 			myElement = em.find(Element.class, j);
 			if (myElement != null) {
@@ -84,7 +123,7 @@ public class MonkeyIsland implements MIRemote {
 				retour = false;
 			}
 		}
-		pirate = new Pirate(j, x, y, 100);
+		
 		pirate.setId(j);
 		Random random = new Random();
 		
@@ -100,7 +139,7 @@ public class MonkeyIsland implements MIRemote {
 		e.setType("Pirate");
 		
 		em.persist(e);
-		
+		pirates.put(pirate.getId(), pirate);
 		
 		createMonkey();
 		createMonkey();

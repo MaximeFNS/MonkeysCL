@@ -35,6 +35,11 @@ public class Communication implements CommunicationLocal {
 		sendIntArrayMessage(map, id, "map");
 	}
 	
+	@Override
+	public void sendPirate(String deplacement, String id) {
+		sendStringMessage(deplacement, id, "move");
+	}
+	
 	private void sendIntArrayMessage(int[][] array, String id, String type){
     	StreamMessage message = context.createStreamMessage();
     	try {
@@ -71,4 +76,16 @@ public class Communication implements CommunicationLocal {
 		
 		
 	}
+	
+	private void sendStringMessage(String chaine, String id, String type){
+    	StreamMessage message = context.createStreamMessage();
+    	try {
+    		message.setStringProperty("id", id);
+    		message.setJMSType(type);
+    		message.writeString(chaine);
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+    	context.createProducer().send(topic, message);
+    }
 }
