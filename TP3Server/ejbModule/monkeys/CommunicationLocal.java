@@ -12,4 +12,5 @@ public interface CommunicationLocal {
 	public void sendMonkeys(HashMap<Integer,Monkey> monkeys);
 	public void sendPirate(String deplacement, String id);
 	public void sendPirates(ArrayList<Integer> ids, ArrayList<Dimension> dimensions);
+	public void sendRum(HashMap<Integer,Rum> bottles);
 }

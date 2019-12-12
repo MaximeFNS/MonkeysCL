@@ -196,6 +196,19 @@ public class Monkeys implements MessageListener{
 					fenetre.ajoutPirate(id, x, y, "img/Mon_Pirate.png", 100);
 					fenetre.repaint();
 				}
+			} else if (message.getJMSType().contains("rum")) {
+				
+				StreamMessage streamMessage = (StreamMessage) message;
+				int id = streamMessage.getIntProperty("id");
+				int posX = streamMessage.readInt();
+				int posY = streamMessage.readInt();
+				int intv = streamMessage.readInt();
+				boolean v = false;
+				if(intv==1) {
+					v = true;
+				}
+				
+				fenetre.creationRhum(posX, posY, v);
 			}
 			
 		} catch (JMSException e) {

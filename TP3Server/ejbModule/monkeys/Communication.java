@@ -110,4 +110,23 @@ public class Communication implements CommunicationLocal {
 		}
     	context.createProducer().send(topic, message);
     }
+
+	@Override
+	public void sendRum(HashMap<Integer, Rum> bottles) {
+		bottles.forEach((k,v) -> {
+			StreamMessage message = context.createStreamMessage();
+			try {
+				message.setStringProperty("id", String.valueOf(v.getId()));
+				message.setJMSType("rum");
+				message.writeInt(v.getPosX());
+				message.writeInt(v.getPosY());
+				message.writeInt(v.getVisibility());
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			context.createProducer().send(topic, message);
+		});
+		
+	}
 }

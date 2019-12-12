@@ -31,6 +31,8 @@ public class MonkeyIsland implements MIRemote {
 	
 	private HashMap<Integer,Monkey> monkeys = new HashMap<Integer,Monkey>();
 	
+	private HashMap<Integer,Rum> bottles = new HashMap<Integer,Rum>();
+	
 	@EJB
 	Configuration configuration;
 	
@@ -135,6 +137,7 @@ public class MonkeyIsland implements MIRemote {
 		int x = 0;
 		int y = 0;
 		boolean isMonkeyPresent = false;
+		boolean isBottlePresent = false;
 		while(retour) {
 			System.out.println("j : " + j);
 			myElement = em.find(Element.class, j);
@@ -144,6 +147,12 @@ public class MonkeyIsland implements MIRemote {
 					isMonkeyPresent = true;
 					monkeys.put(j, new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
 				}
+				
+				if(myElement.getType().contentEquals("Rum")) {
+					isBottlePresent = true;
+					bottles.put(j, new Rum(j,myElement.getPosX(),myElement.getPosY(),1));
+				}
+				
 				j++;
 		}
 			else {
@@ -177,6 +186,13 @@ public class MonkeyIsland implements MIRemote {
 		}
 		communication.sendMonkeys(monkeys);
 		
+		if(!isBottlePresent) {
+			createRumBottles();
+			createRumBottles();
+			createRumBottles();
+			createRumBottles();
+		}
+		communication.sendRum(bottles);
 	}
 	
 	private void createMonkey() {
@@ -217,11 +233,44 @@ public class MonkeyIsland implements MIRemote {
 					positionAleatoire();
 				} 
 			});
+			if(bottles != null) {
+				bottles.forEach((k,v) -> {
+					if(v.getPosX() == x && v.getPosY() == y) {
+						positionAleatoire();
+					} 
+				});
+			}
 		}
 		
 		result[0] = x;
 		result[1] = y;
 		return result;
+	}
+	
+	private void createRumBottles() {
+		boolean retour = true;
+		Integer j = 2;
+		
+		while(retour) {
+			myElement = em.find(Element.class, j);
+			if (myElement != null) {
+				j++;
+			}
+			else {
+				retour = false;
+			}
+		}
+		int[] position = positionAleatoire();
+		Rum rum = new Rum(j, position[0], position[1], 1);
+		rum.setType("Rum");
+		bottles.putIfAbsent(j,rum);
+		
+		Element e = new Element();
+		
+		e.setPosX(rum.getPosX());
+		e.setPosY(rum.getPosY());
+		e.setType("Rum");
+		em.persist(e);
 	}
 	
 	
