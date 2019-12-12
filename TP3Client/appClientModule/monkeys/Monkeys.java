@@ -51,7 +51,6 @@ public class Monkeys implements MessageListener{
 		MIRemote rw = lookup();
 		
 		monkeys.subscribeTopic(monkeys);
-		System.out.println("Je suis passé ici");
 		pirate = rw.subscribe("1");
 		boolean ok = true;
 		while (ok) {

@@ -10,7 +10,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 /**
  * Session Bean implementation class MonkeyIsland
@@ -56,7 +55,7 @@ public class MonkeyIsland implements MIRemote {
 	public void disconnect(String id) {
 		
 	}
-
+	
 	@Override
 	public void move(String id, String deplacement) {
 		int idInt = Integer.valueOf(id);
@@ -94,7 +93,7 @@ public class MonkeyIsland implements MIRemote {
 		sendAllPirates(newPirate);
 		
 	}
-
+	
 	private void sendAllPirates(Pirate newPirate) {
 		ArrayList<Dimension> autresPirates = new ArrayList<>();
 		ArrayList<Integer> ids = new ArrayList<>();
@@ -112,7 +111,7 @@ public class MonkeyIsland implements MIRemote {
 		}
 		communication.sendPirates(ids, autresPirates);
 	}
-	
+
 	private void newGame(int id) {
 		
 		myLand = em.find(Island.class, id);
@@ -135,17 +134,23 @@ public class MonkeyIsland implements MIRemote {
 		int j = 2;
 		int x = 0;
 		int y = 0;
-		pirate = new Pirate(j, x, y, 100);
+		boolean isMonkeyPresent = false;
 		while(retour) {
+			System.out.println("j : " + j);
 			myElement = em.find(Element.class, j);
-			if (myElement != null) {
+			if (myElement!=null) {
+				System.out.println("Type: " + myElement.getType());
+				if(myElement.getType().contentEquals("Monkey")) {
+					isMonkeyPresent = true;
+					monkeys.put(j, new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
+				}
 				j++;
 		}
 			else {
 				retour = false;
 			}
 		}
-		
+		pirate = new Pirate(j, x, y, 100);
 		pirate.setId(j);
 		Random random = new Random();
 		
@@ -161,14 +166,17 @@ public class MonkeyIsland implements MIRemote {
 		e.setType("Pirate");
 		
 		em.persist(e);
-		pirates.put(pirate.getId(), pirate);
 		
-		createMonkey();
-		createMonkey();
-		createMonkey();
-		createMonkey();
+		System.out.println("isMonkeyPresent: " + isMonkeyPresent);
+		System.out.println("monkeys size: " + monkeys.size());
+		if(!isMonkeyPresent) {
+			createMonkey();
+			createMonkey();
+			createMonkey();
+			createMonkey();
+		}
 		communication.sendMonkeys(monkeys);
-		sendAllPirates(pirate);
+		
 	}
 	
 	private void createMonkey() {
@@ -184,14 +192,11 @@ public class MonkeyIsland implements MIRemote {
 				retour = false;
 			}
 		}
-		System.out.println("------>"+j);
 		int[] position = positionAleatoire();
 		Monkey monkey = new Monkey(j, position[0], position[1], 50);
 		monkey.setType("Monkey");
+		System.out.println("Monkey " + j);
 		monkeys.putIfAbsent(j,monkey);
-		System.out.println("Singe : " + monkeys.get(j));
-		System.out.println("Singe x : " + monkey.getPosX());
-		System.out.println("Singe y : " + monkey.getPosY());
 		
 		Element e = new Element();
 		
@@ -206,8 +211,6 @@ public class MonkeyIsland implements MIRemote {
 		int[] result = new int[2];
 		int x = random.nextInt(8)+1;
 		int y = random.nextInt(8)+1;
-		System.out.println("Aléa x:" +x);
-		System.out.println("Aléa x:" +y);
 		if(monkeys != null) {
 			monkeys.forEach((k,v) -> {
 				if(v.getPosX() == x && v.getPosY() == y) {
@@ -220,5 +223,6 @@ public class MonkeyIsland implements MIRemote {
 		result[1] = y;
 		return result;
 	}
+	
 	
 }
