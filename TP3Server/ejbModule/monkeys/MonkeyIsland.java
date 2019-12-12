@@ -1,5 +1,7 @@
 package monkeys;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -8,6 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  * Session Bean implementation class MonkeyIsland
@@ -88,7 +91,26 @@ public class MonkeyIsland implements MIRemote {
 		toUpdate.setType("Pirate");
 		em.merge(toUpdate);
 		communication.sendPirate(deplacement, id);
+		sendAllPirates(newPirate);
 		
+	}
+
+	private void sendAllPirates(Pirate newPirate) {
+		ArrayList<Dimension> autresPirates = new ArrayList<>();
+		ArrayList<Integer> ids = new ArrayList<>();
+		Element e = null;
+		for(int k = 2; k < 15;k++) {
+			e = em.find(Element.class, k);
+			System.out.println("K="+k);
+			if(e!=null) {
+				if(e.getType()=="Pirate" && e.getId()!=newPirate.getId()) {
+					autresPirates.add(new Dimension(e.getPosX(),e.getPosY()));
+					ids.add(e.getId());
+				}
+			}
+			e = null;
+		}
+		communication.sendPirates(ids, autresPirates);
 	}
 	
 	private void newGame(int id) {
@@ -146,6 +168,7 @@ public class MonkeyIsland implements MIRemote {
 		createMonkey();
 		createMonkey();
 		communication.sendMonkeys(monkeys);
+		sendAllPirates(pirate);
 	}
 	
 	private void createMonkey() {
@@ -197,6 +220,5 @@ public class MonkeyIsland implements MIRemote {
 		result[1] = y;
 		return result;
 	}
-	
 	
 }

@@ -153,6 +153,7 @@ public class Monkeys implements MessageListener{
 		try {
 
 			if(message.getJMSType().contains("map")) {
+				
 				int[][] map = new int[10][10];
 
 				StreamMessage streamMessage = (StreamMessage) message;
@@ -164,23 +165,39 @@ public class Monkeys implements MessageListener{
 				}
 				
 				fenetre.creationCarte(map);
-				fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
+				fenetre.suppressionPirate(pirate.getId());
 				
+				fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
+				fenetre.repaint();
 				
 				
 			} else if (message.getJMSType().contains("object")) {
+				
 				StreamMessage streamMessage = (StreamMessage) message;
 				int id = streamMessage.getIntProperty("id");
 				int posX = streamMessage.readInt();
 				int posY = streamMessage.readInt();
+				
 				fenetre.creationEMonkey(id, posX, posY);
 			}	else if(message.getJMSType().contains("move")) {
-				String newMove = "";
-				StreamMessage streamMessage = (StreamMessage) message;
-				newMove = streamMessage.readString();
+				
 					fenetre.suppressionPirate(Integer.valueOf(message.getStringProperty("id")));
-					fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());		
-			}	
+					fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
+					fenetre.repaint();
+			}	else if(message.getJMSType().contains("allPirates")) {
+				
+				StreamMessage streamMessage = (StreamMessage) message;
+				int taille = Integer.valueOf(streamMessage.getStringProperty("size"));
+				for(int j =0; j<taille;j++) {
+					int id = streamMessage.readInt();
+					int x = streamMessage.readInt();
+					int y = streamMessage.readInt();
+					
+					fenetre.suppressionPirate(id);
+					fenetre.ajoutPirate(id, x, y, "img/Mon_Pirate.png", 100);
+					fenetre.repaint();
+				}
+			}
 			
 		} catch (JMSException e) {
 			e.printStackTrace();
@@ -209,8 +226,6 @@ class Keychecker extends KeyAdapter {
     int s = event.getKeyCode();
     
     code = s;
-    
-    System.out.println("code " + code);
     
     }
 }

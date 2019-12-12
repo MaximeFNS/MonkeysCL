@@ -1,5 +1,7 @@
 package monkeys;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.annotation.Resource;
@@ -88,4 +90,23 @@ public class Communication implements CommunicationLocal {
 		}
     	context.createProducer().send(topic, message);
     }
+	
+	@Override
+	public void sendPirates(ArrayList<Integer> ids, ArrayList<Dimension> autresPirates) {
+		StreamMessage message = context.createStreamMessage();
+		try {
+			String taille = "" + autresPirates.size();
+			message.setStringProperty("size", taille);
+    		message.setJMSType("allPirates");
+    		for(int i=0;i<autresPirates.size();i++) {
+    			message.writeInt(ids.get(i));
+    			message.writeInt((int) autresPirates.get(i).getWidth());
+    			message.writeInt((int) autresPirates.get(i).getHeight());
+    		}
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+    	context.createProducer().send(topic, message);
+		
+	}
 }

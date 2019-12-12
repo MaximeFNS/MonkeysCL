@@ -1,5 +1,7 @@
 package monkeys;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.ejb.Local;
@@ -9,4 +11,5 @@ public interface CommunicationLocal {
 	public void sendMap(int[][] map, String id);
 	public void sendMonkeys(HashMap<Integer,Monkey> monkeys);
 	public void sendPirate(String deplacement, String id);
+	public void sendPirates(ArrayList<Integer> ids, ArrayList<Dimension> dimensions);
 }
