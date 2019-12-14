@@ -5,6 +5,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.jms.JMSException;
@@ -40,6 +41,7 @@ public class Monkeys implements MessageListener{
 	
 	private static Fenetre fenetre;
 	private static Pirate pirate;
+	static MIRemote rw;
 	public static void main(String[] args) throws Exception {
 		
 		fenetre = new Fenetre("MonkeysIsland");
@@ -48,7 +50,7 @@ public class Monkeys implements MessageListener{
 		fenetre.setVisible(true);
 		
 		monkeys = new Monkeys();
-		MIRemote rw = lookup();
+		rw = lookup();
 		
 		monkeys.subscribeTopic(monkeys);
 		pirate = rw.subscribe("1");
@@ -142,8 +144,7 @@ public class Monkeys implements MessageListener{
 	}
 	
 	private void notifyDisconnect() {
-		System.out.println("déconnecté");
-		
+		//TODO:Implementer quitter partie
 	}
 
 	@Override
@@ -179,23 +180,17 @@ public class Monkeys implements MessageListener{
 				
 				fenetre.creationEMonkey(id, posX, posY);
 			}	else if(message.getJMSType().contains("move")) {
-				
 					fenetre.suppressionPirate(Integer.valueOf(message.getStringProperty("id")));
 					fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
-					fenetre.repaint();
+					//fenetre.repaint();
 			}	else if(message.getJMSType().contains("allPirates")) {
-				
-				StreamMessage streamMessage = (StreamMessage) message;
-				int taille = Integer.valueOf(streamMessage.getStringProperty("size"));
-				for(int j =0; j<taille;j++) {
-					int id = streamMessage.readInt();
-					int x = streamMessage.readInt();
-					int y = streamMessage.readInt();
-					
-					fenetre.suppressionPirate(id);
-					fenetre.ajoutPirate(id, x, y, "img/Mon_Pirate.png", 100);
-					fenetre.repaint();
+				ArrayList<Pirate> pirates= new ArrayList<>();
+				pirates= rw.sendAllPirates(pirate);
+				for(int k =0; k<pirates.size();k++) {
+					fenetre.suppressionPirate(pirates.get(k).getId());
+					fenetre.ajoutPirate(pirates.get(k).getId(), pirates.get(k).getPosX(), pirates.get(k).getPosY(), "img/Autres_Pirates.jpg", 100);
 				}
+
 			} else if (message.getJMSType().contains("rum")) {
 				
 				StreamMessage streamMessage = (StreamMessage) message;
@@ -238,6 +233,6 @@ class Keychecker extends KeyAdapter {
     int s = event.getKeyCode();
     
     code = s;
-    
+
     }
 }

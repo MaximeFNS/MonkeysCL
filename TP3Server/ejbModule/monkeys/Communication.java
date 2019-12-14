@@ -75,17 +75,10 @@ public class Communication implements CommunicationLocal {
 	}
 	
 	@Override
-	public void sendPirates(ArrayList<Integer> ids, ArrayList<Dimension> autresPirates) {
+	public void sendPirates() {
 		StreamMessage message = context.createStreamMessage();
 		try {
-			String taille = "" + autresPirates.size();
-			message.setStringProperty("size", taille);
     		message.setJMSType("allPirates");
-    		for(int i=0;i<autresPirates.size();i++) {
-    			message.writeInt(ids.get(i));
-    			message.writeInt((int) autresPirates.get(i).getWidth());
-    			message.writeInt((int) autresPirates.get(i).getHeight());
-    		}
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}

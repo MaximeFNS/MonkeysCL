@@ -63,24 +63,19 @@ public class MonkeyIsland implements MIRemote {
 		int idInt = Integer.valueOf(id);
 		
 		Pirate newPirate = pirates.get(idInt);
-		String requete = "";
 		switch(deplacement) {
 		  case "-1-0":
 			  newPirate.setPosX(newPirate.getPosX()-1);
-			  requete = "UPDATE Element SET POSX = "+newPirate.getPosX()+ " WHERE ID = " + newPirate.getId();
 		    break;
 		  case "0-1":
 			  newPirate.setPosY(newPirate.getPosY()-1);
-			  requete = "UPDATE Element SET POSY = "+newPirate.getPosY()+ " WHERE ID = " + newPirate.getId();
-		    break;
+			break;
 		  case "1-0":
 			  newPirate.setPosX(newPirate.getPosX()+1);
-			  requete = "UPDATE Element SET POSX = "+newPirate.getPosX()+ " WHERE ID = " + newPirate.getId();
-			    break;
+			break;
 		  case "0--1":
 			  newPirate.setPosY(newPirate.getPosY()+1);
-			  requete = "UPDATE Element SET POSY = "+newPirate.getPosY()+ " WHERE ID = " + newPirate.getId();
-			    break;
+			break;
 		  default:
 		}
 		pirates.replace(idInt, newPirate);
@@ -92,26 +87,24 @@ public class MonkeyIsland implements MIRemote {
 		toUpdate.setType("Pirate");
 		em.merge(toUpdate);
 		communication.sendPirate(deplacement, id);
-		sendAllPirates(newPirate);
-		
+		communication.sendPirates();
 	}
 	
-	private void sendAllPirates(Pirate newPirate) {
-		ArrayList<Dimension> autresPirates = new ArrayList<>();
-		ArrayList<Integer> ids = new ArrayList<>();
+	@Override
+	public ArrayList<Pirate> sendAllPirates(Pirate newPirate) {
+		ArrayList<Pirate> autresPirates = new ArrayList<>();
 		Element e = null;
 		for(int k = 2; k < 15;k++) {
 			e = em.find(Element.class, k);
-			System.out.println("K="+k);
 			if(e!=null) {
 				if(e.getType()=="Pirate" && e.getId()!=newPirate.getId()) {
-					autresPirates.add(new Dimension(e.getPosX(),e.getPosY()));
-					ids.add(e.getId());
+					Pirate pirat = new Pirate(e.getId(),e.getPosX(),e.getPosY(),100);
+					autresPirates.add(pirat);
 				}
 			}
 			e = null;
 		}
-		communication.sendPirates(ids, autresPirates);
+		return autresPirates;
 	}
 
 	private void newGame(int id) {
@@ -139,10 +132,8 @@ public class MonkeyIsland implements MIRemote {
 		boolean isMonkeyPresent = false;
 		boolean isBottlePresent = false;
 		while(retour) {
-			System.out.println("j : " + j);
 			myElement = em.find(Element.class, j);
 			if (myElement!=null) {
-				System.out.println("Type: " + myElement.getType());
 				if(myElement.getType().contentEquals("Monkey")) {
 					isMonkeyPresent = true;
 					monkeys.put(j, new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
@@ -175,6 +166,7 @@ public class MonkeyIsland implements MIRemote {
 		e.setType("Pirate");
 		
 		em.persist(e);
+		pirates.put(pirate.getId(), pirate);
 		
 		System.out.println("isMonkeyPresent: " + isMonkeyPresent);
 		System.out.println("monkeys size: " + monkeys.size());
@@ -193,6 +185,8 @@ public class MonkeyIsland implements MIRemote {
 			createRumBottles();
 		}
 		communication.sendRum(bottles);
+		
+		communication.sendPirates();
 	}
 	
 	private void createMonkey() {
