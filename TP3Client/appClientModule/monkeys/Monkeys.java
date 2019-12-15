@@ -180,9 +180,13 @@ public class Monkeys implements MessageListener{
 				
 				fenetre.creationEMonkey(id, posX, posY);
 			}	else if(message.getJMSType().contains("move")) {
+				int id = Integer.valueOf(message.getStringProperty("id"));
+				if(id==pirate.getId()) {
 					fenetre.suppressionPirate(Integer.valueOf(message.getStringProperty("id")));
 					fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
 					//fenetre.repaint();
+				}
+
 			}	else if(message.getJMSType().contains("allPirates")) {
 				ArrayList<Pirate> pirates= new ArrayList<>();
 				pirates= rw.sendAllPirates(pirate);
