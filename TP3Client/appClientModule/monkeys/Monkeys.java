@@ -1,4 +1,5 @@
 package monkeys;
+import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -28,6 +29,7 @@ import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 
+import guybrush.view.EnergyView;
 import guybrush.view.Fenetre;
 
 /**
@@ -40,7 +42,9 @@ public class Monkeys implements MessageListener{
 	private Properties props;
 	
 	private static Fenetre fenetre;
+	public static EnergyView ev;
 	private static Pirate pirate;
+	boolean inGame = false;
 	static MIRemote rw;
 	public static void main(String[] args) throws Exception {
 		
@@ -54,28 +58,37 @@ public class Monkeys implements MessageListener{
 		
 		monkeys.subscribeTopic(monkeys);
 		pirate = rw.subscribe("1");
+		
 		boolean ok = true;
 		while (ok) {
 			
 			switch(kc.code) {
 			  case 37:
-				  pirate.setPosX(pirate.getPosX()-1);
-				  rw.move(String.valueOf(pirate.getId()), "-1-0");
+				  if(pirate.getPosX()>1) {
+					  pirate.setPosX(pirate.getPosX()-1);
+					  rw.move(String.valueOf(pirate.getId()), "-1-0");  
+				  }
 				  kc.code = 0;
 			    break;
 			  case 38:
+				  if(pirate.getPosY()>1) {
 				  pirate.setPosY(pirate.getPosY()-1);
 				  rw.move(String.valueOf(pirate.getId()), "0-1");
+				  }
 				  kc.code = 0;
 			    break;
 			  case 39:
+				  if(pirate.getPosX()<8) {
 				  pirate.setPosX(pirate.getPosX()+1);
 				  rw.move(String.valueOf(pirate.getId()), "1-0");
+				  }
 				  kc.code = 0;
 				    break;
 			  case 40:
+				  if(pirate.getPosY()<8) {
 				  pirate.setPosY(pirate.getPosY()+1);
 				  rw.move(String.valueOf(pirate.getId()), "0--1");
+				  }
 				  kc.code = 0;
 				    break;
 			  default:
@@ -168,8 +181,15 @@ public class Monkeys implements MessageListener{
 				fenetre.suppressionPirate(pirate.getId());
 				
 				fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
-				fenetre.repaint();
 				
+				fenetre.repaint();
+				if(inGame ==false) {
+					ev = fenetre.getEnergyView();
+					ev.setEnergieMax(100);
+					ev.miseAJourEnergie(100);
+				}
+				
+				inGame =true;
 				
 			} else if (message.getJMSType().contains("monkeys")) {
 				
@@ -181,23 +201,21 @@ public class Monkeys implements MessageListener{
 					int posX = streamMessage.readInt();
 					int posY = streamMessage.readInt();
 					fenetre.creationEMonkey(id, posX, posY);
-				}
-				
-				
-				
+				}		
 				
 			}	else if(message.getJMSType().contains("move")) {
 				int id = Integer.valueOf(message.getStringProperty("id"));
 				if(id==pirate.getId()) {
 					System.out.println("State : " + pirate.getState());
+					pirate.setEnergy(pirate.getEnergy()-1);
 					fenetre.suppressionPirate(Integer.valueOf(message.getStringProperty("id")));
 					if(!pirate.getState().contentEquals("DEAD")) {
 						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
 					} else {
 						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Pirate_Mort.png", pirate.getEnergy());
 					}
+					ev.miseAJourEnergie(-1);
 					
-					//fenetre.repaint();
 				}
 
 			}	else if(message.getJMSType().contains("allPirates")) {
