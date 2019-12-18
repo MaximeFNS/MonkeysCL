@@ -171,14 +171,24 @@ public class Monkeys implements MessageListener{
 				fenetre.repaint();
 				
 				
-			} else if (message.getJMSType().contains("object")) {
+			} else if (message.getJMSType().contains("monkeys")) {
 				
+				fenetre.removeEMonkeys();
 				StreamMessage streamMessage = (StreamMessage) message;
-				int id = streamMessage.getIntProperty("id");
-				int posX = streamMessage.readInt();
-				int posY = streamMessage.readInt();
+				int taille = streamMessage.readInt();
+				System.out.println("Taille : " + taille);
+				for(int i = 0; i<taille; i++) {
+					int id = streamMessage.readInt();
+					int posX = streamMessage.readInt();
+					int posY = streamMessage.readInt();
+					System.out.println("Singe : " + id);
+					System.out.println("Compare : (" + posX + "," + posY + ")");
+					fenetre.creationEMonkey(id, posX, posY);
+				}
 				
-				fenetre.creationEMonkey(id, posX, posY);
+				
+				
+				
 			}	else if(message.getJMSType().contains("move")) {
 				int id = Integer.valueOf(message.getStringProperty("id"));
 				if(id==pirate.getId()) {
@@ -198,7 +208,6 @@ public class Monkeys implements MessageListener{
 			} else if (message.getJMSType().contains("rum")) {
 				
 				StreamMessage streamMessage = (StreamMessage) message;
-				int id = streamMessage.getIntProperty("id");
 				int posX = streamMessage.readInt();
 				int posY = streamMessage.readInt();
 				int intv = streamMessage.readInt();

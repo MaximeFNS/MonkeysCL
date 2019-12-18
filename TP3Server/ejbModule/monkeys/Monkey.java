@@ -1,5 +1,8 @@
 package monkeys;
 
+import javax.persistence.Entity;
+
+@Entity
 public class Monkey extends Element {
 	private int speed;
 	
@@ -7,6 +10,7 @@ public class Monkey extends Element {
 		this.id = id;
 		this.posX = x;
 		this.posY = y;
+		this.type = "Monkey";
 		this.speed = speed;
 	}
 

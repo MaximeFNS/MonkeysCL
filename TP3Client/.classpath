@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="appClientModule"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_202">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/WildFly 8.x Runtime">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.appclient"/>
@@ -13,7 +8,8 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/TP3Server"/>
-	<classpathentry kind="lib" path="C:/Users/maxax/Desktop/ESEO/I3/ComposantsLogiciels/wildfly-8.2.1.Final/bin/client/jboss-client.jar"/>
-	<classpathentry kind="lib" path="C:/Users/maxax/Desktop/ESEO/I3/ComposantsLogiciels/gbui.jar"/>
+	<classpathentry kind="lib" path="C:/Users/aldeb/Documents/ESEO/I3/Composants Logiciels/gbui.jar"/>
+	<classpathentry kind="lib" path="C:/Users/aldeb/Documents/ESEO/I3/Composants Logiciels/wildfly-8.2.1.Final/wildfly-8.2.1.Final/bin/client/jboss-client.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

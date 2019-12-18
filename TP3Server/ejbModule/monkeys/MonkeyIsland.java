@@ -141,7 +141,7 @@ public class MonkeyIsland implements MIRemote {
 				
 				if(myElement.getType().contentEquals("Rum")) {
 					isBottlePresent = true;
-					bottles.put(j, new Rum(j,myElement.getPosX(),myElement.getPosY(),1));
+					bottles.put(j, new Rum(j, myElement.getPosX(),myElement.getPosY(),1));
 				}
 				
 				j++;
@@ -168,16 +168,6 @@ public class MonkeyIsland implements MIRemote {
 		em.persist(e);
 		pirates.put(pirate.getId(), pirate);
 		
-		System.out.println("isMonkeyPresent: " + isMonkeyPresent);
-		System.out.println("monkeys size: " + monkeys.size());
-		if(!isMonkeyPresent) {
-			createMonkey();
-			createMonkey();
-			createMonkey();
-			createMonkey();
-		}
-		communication.sendMonkeys(monkeys);
-		
 		if(!isBottlePresent) {
 			createRumBottles();
 			createRumBottles();
@@ -185,6 +175,14 @@ public class MonkeyIsland implements MIRemote {
 			createRumBottles();
 		}
 		communication.sendRum(bottles);
+		
+		if(!isMonkeyPresent) {
+			createMonkey();
+			createMonkey();
+			createMonkey();
+			createMonkey();
+		}
+		communication.sendMonkeys(monkeys);
 		
 		communication.sendPirates();
 	}
@@ -204,8 +202,6 @@ public class MonkeyIsland implements MIRemote {
 		}
 		int[] position = positionAleatoire();
 		Monkey monkey = new Monkey(j, position[0], position[1], 50);
-		monkey.setType("Monkey");
-		System.out.println("Monkey " + j);
 		monkeys.putIfAbsent(j,monkey);
 		
 		Element e = new Element();

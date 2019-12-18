@@ -56,22 +56,27 @@ public class Communication implements CommunicationLocal {
 
 	@Override
 	public void sendMonkeys(HashMap<Integer,Monkey> monkeys) {
+		StreamMessage message = context.createStreamMessage();
+		try {
+			message.setJMSType("monkeys");
+			message.writeInt(monkeys.size());
+		} catch (JMSException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		monkeys.forEach((k,v) -> {
-			StreamMessage message = context.createStreamMessage();
+			
 			try {
-				message.setStringProperty("id", String.valueOf(v.getId()));
-				message.setJMSType("object");
+				message.writeInt(v.getId());
 				message.writeInt(v.getPosX());
 				message.writeInt(v.getPosY());
-				message.writeInt(v.getSpeed());
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			context.createProducer().send(topic, message);
+			
 		});
-		
-		
+		context.createProducer().send(topic, message);
 	}
 	
 	@Override

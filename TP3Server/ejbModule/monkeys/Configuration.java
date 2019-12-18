@@ -35,7 +35,6 @@ public class Configuration implements ConfigurationLocal {
 		}
 		String map = properties.getProperty("MONKEYS_MAP");
 		map = map.substring(1, map.length()-1);
-		System.out.println(map);
 		int[][] matrice = new int[10][10];
 		String[] lignes = map.split(";");
 		for (int i=0; i<lignes.length;i++) {

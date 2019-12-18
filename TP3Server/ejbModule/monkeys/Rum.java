@@ -1,14 +1,18 @@
 package monkeys;
 
+import javax.persistence.Entity;
+
+@Entity
 public class Rum extends Element {
 	
 	private int visibility;
 	
 	public Rum(int id, int x, int y, int visibility) {
-		this.setVisibility(visibility);
 		this.id = id;
+		this.setVisibility(visibility);
 		this.posX = x;
 		this.posY = y;
+		this.type = "Rum";
 	}
 
 	public int getVisibility() {

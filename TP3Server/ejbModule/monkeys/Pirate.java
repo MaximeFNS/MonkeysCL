@@ -1,8 +1,12 @@
 package monkeys;
 
+import javax.persistence.Entity;
+
 /**
  * @author Maxime Afonso
  */
+
+@Entity
 public class Pirate extends Element{
 		
 	/**
@@ -14,6 +18,7 @@ public class Pirate extends Element{
 		this.posX = x;
 		this.posY = y;
 		this.id = id;
+		this.type = "Pirate";
 		this.energy = energy;
 	}
 
