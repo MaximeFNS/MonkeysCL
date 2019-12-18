@@ -10,7 +10,7 @@ import javax.ejb.Local;
 public interface CommunicationLocal {
 	public void sendMap(int[][] map, String id);
 	public void sendMonkeys(HashMap<Integer,Monkey> monkeys);
-	public void sendPirate(String deplacement, String id);
+	public void sendPirate(String deplacement, String id, String state);
 	public void sendPirates();
 	public void sendRum(HashMap<Integer,Rum> bottles);
 }

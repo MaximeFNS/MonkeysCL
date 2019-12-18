@@ -15,6 +15,7 @@ public class Element implements Serializable{
 	protected int posY;
 	protected int id;
 	protected String type;
+	protected String state;
 
 	public Element() {}
 
@@ -65,5 +66,13 @@ public class Element implements Serializable{
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String etat) {
+		state = etat;
 	}
 }

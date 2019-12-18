@@ -92,12 +92,12 @@ public class Communication implements CommunicationLocal {
 	}
 
 	@Override
-	public void sendPirate(String deplacement, String id) {
-		sendStringMessage(deplacement, id, "move");
+	public void sendPirate(String deplacement, String id, String state) {
+		sendStringMessage(deplacement, id, "move", state);
 		
 	}
 	
-	private void sendStringMessage(String chaine, String id, String type){
+	private void sendStringMessage(String chaine, String id, String type, String state){
     	StreamMessage message = context.createStreamMessage();
     	try {
     		message.setStringProperty("id", id);

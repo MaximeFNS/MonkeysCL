@@ -63,31 +63,46 @@ public class MonkeyIsland implements MIRemote {
 		int idInt = Integer.valueOf(id);
 		
 		Pirate newPirate = pirates.get(idInt);
-		switch(deplacement) {
-		  case "-1-0":
-			  newPirate.setPosX(newPirate.getPosX()-1);
-		    break;
-		  case "0-1":
-			  newPirate.setPosY(newPirate.getPosY()-1);
-			break;
-		  case "1-0":
-			  newPirate.setPosX(newPirate.getPosX()+1);
-			break;
-		  case "0--1":
-			  newPirate.setPosY(newPirate.getPosY()+1);
-			break;
-		  default:
-		}
-		pirates.replace(idInt, newPirate);
+		if(!newPirate.getState().equals("DEAD")) {
+			switch(deplacement) {
+			  case "-1-0":
+				  newPirate.setPosX(newPirate.getPosX()-1);
+			    break;
+			  case "0-1":
+				  newPirate.setPosY(newPirate.getPosY()-1);
+				break;
+			  case "1-0":
+				  newPirate.setPosX(newPirate.getPosX()+1);
+				break;
+			  case "0--1":
+				  newPirate.setPosY(newPirate.getPosY()+1);
+				break;
+			  default:
+			}
+			
 		
-		Element toUpdate = new Element();
-		toUpdate.setId(newPirate.getId());
-		toUpdate.setPosX(newPirate.getPosX());
-		toUpdate.setPosY(newPirate.getPosY());
-		toUpdate.setType("Pirate");
-		em.merge(toUpdate);
-		communication.sendPirate(deplacement, id);
-		communication.sendPirates();
+			for(int i = 0; i < monkeys.size(); i++) {
+        		if(monkeys.get(i + 6).getPosX() == newPirate.getPosX() && monkeys.get(i + 6).getPosY() == newPirate.getPosY()) {
+        			newPirate.setState("DEAD");
+        			deplacement = "0-0";
+        		}
+	        }
+			pirates.replace(idInt, newPirate);
+			
+			Element toUpdate = new Element();
+			toUpdate.setId(newPirate.getId());
+			toUpdate.setPosX(newPirate.getPosX());
+			toUpdate.setPosY(newPirate.getPosY());
+			toUpdate.setType("Pirate");
+			toUpdate.setState(newPirate.getState());
+			System.out.println(newPirate.getState());
+			em.merge(toUpdate);
+			communication.sendPirate(deplacement, id, newPirate.getState());
+			communication.sendPirates();
+		} else {
+			communication.sendPirate("0-0", id, newPirate.getState());
+			communication.sendPirates();
+		}
 	}
 	
 	@Override

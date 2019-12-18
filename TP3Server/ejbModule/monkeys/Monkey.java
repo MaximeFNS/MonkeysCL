@@ -2,7 +2,6 @@ package monkeys;
 
 import javax.persistence.Entity;
 
-@Entity
 public class Monkey extends Element {
 	private int speed;
 	

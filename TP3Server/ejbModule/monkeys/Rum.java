@@ -2,7 +2,6 @@ package monkeys;
 
 import javax.persistence.Entity;
 
-@Entity
 public class Rum extends Element {
 	
 	private int visibility;

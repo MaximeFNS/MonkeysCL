@@ -74,14 +74,11 @@ public class MoveTimer {
 		        v.setPosY(newY);
 		        
 		        Element e = em.find(Element.class, k);
-		        System.out.println("Singe : " + k);
-		        System.out.println("Avant : (" + e.getPosX() + "," + e.getPosY() + ")");
 		        e.setPosX(newX);
 		        e.setPosY(newY);
 		        em.merge(e);
 		        
 		        Element e2 = em.find(Element.class, k);
-		        System.out.println("Après : (" + e2.getPosX() + "," + e2.getPosY() + ")");
 		        
 			        
 			        

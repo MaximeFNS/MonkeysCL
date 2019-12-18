@@ -176,13 +176,10 @@ public class Monkeys implements MessageListener{
 				fenetre.removeEMonkeys();
 				StreamMessage streamMessage = (StreamMessage) message;
 				int taille = streamMessage.readInt();
-				System.out.println("Taille : " + taille);
 				for(int i = 0; i<taille; i++) {
 					int id = streamMessage.readInt();
 					int posX = streamMessage.readInt();
 					int posY = streamMessage.readInt();
-					System.out.println("Singe : " + id);
-					System.out.println("Compare : (" + posX + "," + posY + ")");
 					fenetre.creationEMonkey(id, posX, posY);
 				}
 				
@@ -192,8 +189,14 @@ public class Monkeys implements MessageListener{
 			}	else if(message.getJMSType().contains("move")) {
 				int id = Integer.valueOf(message.getStringProperty("id"));
 				if(id==pirate.getId()) {
+					System.out.println("State : " + pirate.getState());
 					fenetre.suppressionPirate(Integer.valueOf(message.getStringProperty("id")));
-					fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
+					if(!pirate.getState().contentEquals("DEAD")) {
+						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
+					} else {
+						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Pirate_Mort.png", pirate.getEnergy());
+					}
+					
 					//fenetre.repaint();
 				}
 
