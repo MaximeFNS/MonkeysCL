@@ -49,7 +49,7 @@ public class MoveTimer {
 				}
 				
 				if(myElement.getType().contentEquals("Rum")) {
-					bottles.put(j, new Rum(j, myElement.getPosX(),myElement.getPosY(),1));
+					bottles.put(j, new Rum(j, myElement.getPosX(),myElement.getPosY(),1,25));
 				}
 				j++;
 			}

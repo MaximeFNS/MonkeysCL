@@ -127,4 +127,16 @@ public class Communication implements CommunicationLocal {
 		});
 		
 	}
+
+	@Override
+	public void removePirate(int id) {
+		StreamMessage message = context.createStreamMessage();
+		try {
+			message.setStringProperty("id", String.valueOf(id));
+    		message.setJMSType("pirateLeft");
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+    	context.createProducer().send(topic, message);
+	}
 }

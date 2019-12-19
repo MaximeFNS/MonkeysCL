@@ -157,7 +157,7 @@ public class Monkeys implements MessageListener{
 	}
 	
 	private void notifyDisconnect() {
-		//TODO:Implementer quitter partie
+		rw.informLeaving(pirate);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class Monkeys implements MessageListener{
 						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Pirate_Mort.png", pirate.getEnergy());
 					}
 					ev.miseAJourEnergie(-1);
-					
+					ev.miseAJourEnergie(rw.getEnergyIfRum(pirate));
 				}
 
 			}	else if(message.getJMSType().contains("allPirates")) {
@@ -238,6 +238,9 @@ public class Monkeys implements MessageListener{
 				}
 				
 				fenetre.creationRhum(posX, posY, v);
+			} else if (message.getJMSType().contains("pirateLeft")) {
+				int id = Integer.valueOf(message.getStringProperty("id"));
+				fenetre.suppressionPirate(id);
 			}
 			
 		} catch (JMSException e) {

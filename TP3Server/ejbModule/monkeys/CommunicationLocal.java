@@ -13,4 +13,5 @@ public interface CommunicationLocal {
 	public void sendPirate(String deplacement, String id, String state);
 	public void sendPirates();
 	public void sendRum(HashMap<Integer,Rum> bottles);
+	public void removePirate(int id);
 }

@@ -109,7 +109,7 @@ public class MonkeyIsland implements MIRemote {
 	public ArrayList<Pirate> sendAllPirates(Pirate newPirate) {
 		ArrayList<Pirate> autresPirates = new ArrayList<>();
 		Element e = null;
-		for(int k = 2; k < 15;k++) {
+		for(int k = 2; k < 20;k++) {
 			e = em.find(Element.class, k);
 			if(e!=null) {
 				if(e.getType()=="Pirate" && e.getId()!=newPirate.getId()) {
@@ -156,7 +156,7 @@ public class MonkeyIsland implements MIRemote {
 				
 				if(myElement.getType().contentEquals("Rum")) {
 					isBottlePresent = true;
-					bottles.put(j, new Rum(j, myElement.getPosX(),myElement.getPosY(),1));
+					bottles.put(j, new Rum(j, myElement.getPosX(),myElement.getPosY(),1,25));
 				}
 				
 				j++;
@@ -266,7 +266,7 @@ public class MonkeyIsland implements MIRemote {
 			}
 		}
 		int[] position = positionAleatoire();
-		Rum rum = new Rum(j, position[0], position[1], 1);
+		Rum rum = new Rum(j, position[0], position[1], 1,25);
 		rum.setType("Rum");
 		bottles.putIfAbsent(j,rum);
 		
@@ -276,6 +276,46 @@ public class MonkeyIsland implements MIRemote {
 		e.setPosY(rum.getPosY());
 		e.setType("Rum");
 		em.persist(e);
+	}
+
+	@Override
+	public int getEnergyIfRum(Pirate pirate) {
+		ArrayList<Rum> allRums = new ArrayList<>();
+		Element e = null;
+		for(int k = 2; k < 20;k++) {
+			e = em.find(Element.class, k);
+			if(e!=null) {
+				if(e.getType()=="Rum") {
+					Rum rum = new Rum(e.getId(),e.getPosX(),e.getPosY(),100,25);
+					allRums.add(rum);
+				}
+			}
+			e = null;
+		}
+		int energy = 0;
+		for(int i = 0; i<allRums.size();i++) {
+			if(pirate.getPosX()==allRums.get(i).getPosX() && pirate.getPosY()==allRums.get(i).getPosY()) {
+				Rum rum = bottles.get(allRums.get(i).getId());
+				energy = rum.getEnergy();
+				//TODO : Change Visibility
+			}
+		}
+		return energy;
+	}
+
+	@Override
+	public void informLeaving(Pirate pirate) {
+		Element e = em.find(Element.class, pirate.getId());
+		e.setPosX(pirate.getPosX());
+		e.setPosY(pirate.getPosY());
+		e.setState(pirate.getState());
+		e.setType("Pirate");
+		communication.removePirate(pirate.getId());
+		System.out.println("Element : " + e.toString());
+		pirates.remove(pirate.getId());
+		//em.getTransaction().begin();
+		 // em.remove(e);
+		  //em.getTransaction().commit();
 	}
 	
 	

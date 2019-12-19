@@ -14,4 +14,6 @@ public interface MIRemote {
 	public void disconnect(String pId);
 	public void move(String id, String deplacement);
 	public ArrayList<Pirate> sendAllPirates(Pirate pirateExclude);
+	public int getEnergyIfRum(Pirate pirate);
+	public void informLeaving(Pirate pirate);
 }

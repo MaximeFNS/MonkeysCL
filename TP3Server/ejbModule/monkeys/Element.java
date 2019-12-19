@@ -75,4 +75,12 @@ public class Element implements Serializable{
 	public void setState(String etat) {
 		state = etat;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Element [posX=" + posX + ", posY=" + posY + ", id=" + id + ", type=" + type + ", state=" + state + "]";
+	}
 }
