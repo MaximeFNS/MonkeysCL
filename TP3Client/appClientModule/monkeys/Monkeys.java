@@ -52,13 +52,29 @@ public class Monkeys implements MessageListener{
 		fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		fenetre.pack();
 		fenetre.setVisible(true);
-		
+		addWindowListener();
 		monkeys = new Monkeys();
 		rw = lookup();
 		
 		monkeys.subscribeTopic(monkeys);
 		pirate = rw.subscribe("1");
 		
+		move();
+		
+	}
+
+	private static void addWindowListener() {
+		fenetre.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				notifyDisconnect();
+			}
+
+			
+		});
+	}
+
+	private static void move() {
 		boolean ok = true;
 		while (ok) {
 			
@@ -95,7 +111,6 @@ public class Monkeys implements MessageListener{
 			}
 			
 		}
-		
 	}
 
 	public Monkeys() {
@@ -156,7 +171,7 @@ public class Monkeys implements MessageListener{
 		
 	}
 	
-	private void notifyDisconnect() {
+	private static void notifyDisconnect() {
 		rw.informLeaving(pirate);
 	}
 
@@ -247,15 +262,7 @@ public class Monkeys implements MessageListener{
 			e.printStackTrace();
 		}
 		
-		fenetre.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent event) {
-				
-				notifyDisconnect();
-			}
-
-			
-		});
+		
 	}
 
 }

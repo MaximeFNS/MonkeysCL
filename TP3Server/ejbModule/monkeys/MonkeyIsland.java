@@ -2,6 +2,7 @@ package monkeys;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -95,10 +96,12 @@ public class MonkeyIsland implements MIRemote {
 			toUpdate.setPosY(newPirate.getPosY());
 			toUpdate.setType("Pirate");
 			toUpdate.setState(newPirate.getState());
+			toUpdate.setIsland(myLand);
 			System.out.println(newPirate.getState());
 			em.merge(toUpdate);
 			communication.sendPirate(deplacement, id, newPirate.getState());
 			communication.sendPirates();
+			
 		} else {
 			communication.sendPirate("0-0", id, newPirate.getState());
 			communication.sendPirates();
@@ -108,6 +111,7 @@ public class MonkeyIsland implements MIRemote {
 	@Override
 	public ArrayList<Pirate> sendAllPirates(Pirate newPirate) {
 		ArrayList<Pirate> autresPirates = new ArrayList<>();
+		ArrayList<Pirate> autresPirates2 = new ArrayList<>();
 		Element e = null;
 		for(int k = 2; k < 20;k++) {
 			e = em.find(Element.class, k);
@@ -119,6 +123,19 @@ public class MonkeyIsland implements MIRemote {
 			}
 			e = null;
 		}
+		/*myLand = em.find(Island.class, 1);
+		Collection<Element> elementsList = myLand.getElements();
+		System.out.println("Taille : " + elementsList.size());
+		int i = 0;
+		for (Element elem : elementsList) {
+			System.out.println(elem.toString());
+			if(elem.getType()=="Pirate" && elem.getId()!=newPirate.getId()) {
+				Pirate pirat = new Pirate(elem.getId(),elem.getPosX(),elem.getPosY(),100);
+				autresPirates2.add(pirat);
+			}
+		}
+		System.out.println(autresPirates2.get(0).toString());
+		System.out.println("Size A : " +autresPirates.size()+" " + autresPirates2.size());*/
 		return autresPirates;
 	}
 
@@ -179,7 +196,8 @@ public class MonkeyIsland implements MIRemote {
 		e.setPosX(x);
 		e.setPosY(y);
 		e.setType("Pirate");
-		
+		e.setState("SOBER");
+		e.setIsland(myLand);
 		em.persist(e);
 		pirates.put(pirate.getId(), pirate);
 		
@@ -224,6 +242,7 @@ public class MonkeyIsland implements MIRemote {
 		e.setPosX(monkey.getPosX());
 		e.setPosY(monkey.getPosY());
 		e.setType("Monkey");
+		e.setIsland(myLand);
 		em.persist(e);
 	}
 	
@@ -275,6 +294,7 @@ public class MonkeyIsland implements MIRemote {
 		e.setPosX(rum.getPosX());
 		e.setPosY(rum.getPosY());
 		e.setType("Rum");
+		e.setIsland(myLand);
 		em.persist(e);
 	}
 
