@@ -110,32 +110,16 @@ public class MonkeyIsland implements MIRemote {
 	
 	@Override
 	public ArrayList<Pirate> sendAllPirates(Pirate newPirate) {
-		ArrayList<Pirate> autresPirates = new ArrayList<>();
 		ArrayList<Pirate> autresPirates2 = new ArrayList<>();
-		Element e = null;
-		for(int k = 2; k < 20;k++) {
-			e = em.find(Element.class, k);
-			if(e!=null) {
-				if(e.getType()=="Pirate" && e.getId()!=newPirate.getId()) {
-					Pirate pirat = new Pirate(e.getId(),e.getPosX(),e.getPosY(),100);
-					autresPirates.add(pirat);
-				}
-			}
-			e = null;
-		}
 		myLand = em.find(Island.class, 1);
 		Collection<Element> elementsList = myLand.getElements();
-		System.out.println("Taille : " + elementsList.size());
 		int i = 0;
 		for (Element elem : elementsList) {
-			System.out.println(elem.toString());
 			if(elem.getType()=="Pirate" && elem.getId()!=newPirate.getId()) {
 				Pirate pirat = new Pirate(elem.getId(),elem.getPosX(),elem.getPosY(),100);
 				autresPirates2.add(pirat);
 			}
 		}
-		//System.out.println(autresPirates2.get(0).toString());
-		System.out.println("Size AAAAAAAAA : " +autresPirates.size()+" " + autresPirates2.size());
 		return autresPirates2;
 	}
 
