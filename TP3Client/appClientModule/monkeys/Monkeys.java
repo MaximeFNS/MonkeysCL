@@ -262,7 +262,6 @@ public class Monkeys implements MessageListener{
 			e.printStackTrace();
 		}
 		
-		
 	}
 
 }

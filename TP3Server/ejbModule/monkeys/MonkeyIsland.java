@@ -123,7 +123,7 @@ public class MonkeyIsland implements MIRemote {
 			}
 			e = null;
 		}
-		/*myLand = em.find(Island.class, 1);
+		myLand = em.find(Island.class, 1);
 		Collection<Element> elementsList = myLand.getElements();
 		System.out.println("Taille : " + elementsList.size());
 		int i = 0;
@@ -134,9 +134,9 @@ public class MonkeyIsland implements MIRemote {
 				autresPirates2.add(pirat);
 			}
 		}
-		System.out.println(autresPirates2.get(0).toString());
-		System.out.println("Size A : " +autresPirates.size()+" " + autresPirates2.size());*/
-		return autresPirates;
+		//System.out.println(autresPirates2.get(0).toString());
+		System.out.println("Size AAAAAAAAA : " +autresPirates.size()+" " + autresPirates2.size());
+		return autresPirates2;
 	}
 
 	private void newGame(int id) {
@@ -158,7 +158,7 @@ public class MonkeyIsland implements MIRemote {
 			
 		}
 		boolean retour = true;
-		int j = 2;
+		int j = 1;
 		int x = 0;
 		int y = 0;
 		boolean isMonkeyPresent = false;
