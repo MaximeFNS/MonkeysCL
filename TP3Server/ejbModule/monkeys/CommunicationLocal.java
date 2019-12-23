@@ -9,9 +9,9 @@ import javax.ejb.Local;
 @Local
 public interface CommunicationLocal {
 	public void sendMap(int[][] map, String id);
-	public void sendMonkeys(HashMap<Integer,Monkey> monkeys);
-	public void sendPirate(String deplacement, String id, String state);
+	public void sendMonkeys(ArrayList<Monkey> monkeys);
+	public void sendPirate(String deplacement, String id, String state, int energy);
 	public void sendPirates();
-	public void sendRum(HashMap<Integer,Rum> bottles);
+	public void sendRum(ArrayList<Rum> bottles);
 	public void removePirate(int id);
 }

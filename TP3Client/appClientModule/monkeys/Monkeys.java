@@ -76,39 +76,39 @@ public class Monkeys implements MessageListener{
 
 	private static void move() {
 		boolean ok = true;
-		while (ok) {
-			
+		while (ok) {		
 			switch(kc.code) {
 			  case 37:
-				  if(pirate.getPosX()>1) {
+				  if(pirate.getPosX()>1 && !pirate.getState().contentEquals("DEAD")) {
 					  pirate.setPosX(pirate.getPosX()-1);
 					  rw.move(String.valueOf(pirate.getId()), "-1-0");  
 				  }
 				  kc.code = 0;
 			    break;
 			  case 38:
-				  if(pirate.getPosY()>1) {
-				  pirate.setPosY(pirate.getPosY()-1);
-				  rw.move(String.valueOf(pirate.getId()), "0-1");
+				  if(pirate.getPosY()>1 && !pirate.getState().contentEquals("DEAD")) {
+					  pirate.setPosY(pirate.getPosY()-1);
+					  rw.move(String.valueOf(pirate.getId()), "0-1");
 				  }
 				  kc.code = 0;
 			    break;
 			  case 39:
-				  if(pirate.getPosX()<8) {
-				  pirate.setPosX(pirate.getPosX()+1);
-				  rw.move(String.valueOf(pirate.getId()), "1-0");
+				  if(pirate.getPosX()<8 && !pirate.getState().contentEquals("DEAD")) {
+					  pirate.setPosX(pirate.getPosX()+1);
+					  rw.move(String.valueOf(pirate.getId()), "1-0");
 				  }
 				  kc.code = 0;
 				    break;
 			  case 40:
-				  if(pirate.getPosY()<8) {
-				  pirate.setPosY(pirate.getPosY()+1);
-				  rw.move(String.valueOf(pirate.getId()), "0--1");
+				  if(pirate.getPosY()<8 && !pirate.getState().contentEquals("DEAD")) {
+					  pirate.setPosY(pirate.getPosY()+1);
+					  rw.move(String.valueOf(pirate.getId()), "0--1");
 				  }
 				  kc.code = 0;
 				    break;
 			  default:
 			}
+			
 			
 		}
 	}
@@ -220,17 +220,19 @@ public class Monkeys implements MessageListener{
 				
 			}	else if(message.getJMSType().contains("move")) {
 				int id = Integer.valueOf(message.getStringProperty("id"));
+				StreamMessage streamMessage = (StreamMessage) message;
+				String deplacement = streamMessage.readString();
+				String state = streamMessage.readString();
+				int energy = streamMessage.readInt();
+				System.out.println(energy);
 				if(id==pirate.getId()) {
-					System.out.println("State : " + pirate.getState());
-					pirate.setEnergy(pirate.getEnergy()-1);
 					fenetre.suppressionPirate(Integer.valueOf(message.getStringProperty("id")));
-					if(!pirate.getState().contentEquals("DEAD")) {
-						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
-					} else {
+					if(state.contentEquals("DEAD")) {
 						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Pirate_Mort.png", pirate.getEnergy());
+					} else {
+						fenetre.ajoutPirate(pirate.getId(), pirate.getPosX(), pirate.getPosY(), "img/Mon_Pirate.png", pirate.getEnergy());
 					}
-					ev.miseAJourEnergie(-1);
-					ev.miseAJourEnergie(rw.getEnergyIfRum(pirate));
+					ev.miseAJourEnergie(energy);
 				}
 
 			}	else if(message.getJMSType().contains("allPirates")) {
@@ -242,17 +244,21 @@ public class Monkeys implements MessageListener{
 				}
 
 			} else if (message.getJMSType().contains("rum")) {
-				
+				fenetre.removeRhums();
 				StreamMessage streamMessage = (StreamMessage) message;
-				int posX = streamMessage.readInt();
-				int posY = streamMessage.readInt();
-				int intv = streamMessage.readInt();
-				boolean v = false;
-				if(intv==1) {
-					v = true;
+				int taille = streamMessage.readInt();
+				for(int i = 0; i<taille; i++) {
+					int id = streamMessage.readInt();
+					int posX = streamMessage.readInt();
+					int posY = streamMessage.readInt();
+					int intv = streamMessage.readInt();
+					boolean v = false;
+					if(intv==1) {
+						v = true;
+					}
+					
+					fenetre.creationRhum(posX, posY, v);
 				}
-				
-				fenetre.creationRhum(posX, posY, v);
 			} else if (message.getJMSType().contains("pirateLeft")) {
 				int id = Integer.valueOf(message.getStringProperty("id"));
 				fenetre.suppressionPirate(id);

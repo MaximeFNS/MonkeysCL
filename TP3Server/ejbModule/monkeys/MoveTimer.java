@@ -25,8 +25,8 @@ public class MoveTimer {
 	private EntityManager em;
     
     private Element myElement;
-	private HashMap<Integer,Monkey> monkeys = new HashMap<Integer,Monkey>();
-	private HashMap<Integer,Rum> bottles = new HashMap<Integer,Rum>();
+	private ArrayList<Monkey> monkeys = new ArrayList<>();
+
 	  
 	  
 	public MoveTimer() {
@@ -40,16 +40,11 @@ public class MoveTimer {
 		boolean retour = true;
 		Integer j = 2;
 		
-		
 		while(retour) {
 			myElement = em.find(Element.class, j);
 			if (myElement != null) {
 				if(myElement.getType().contentEquals("Monkey")) {
-					monkeys.put(j, new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
-				}
-				
-				if(myElement.getType().contentEquals("Rum")) {
-					bottles.put(j, new Rum(j, myElement.getPosX(),myElement.getPosY(),1,25));
+					monkeys.add(new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
 				}
 				j++;
 			}
@@ -59,10 +54,10 @@ public class MoveTimer {
 		}
 		
 		if(monkeys != null) {
-			monkeys.forEach((k,v) -> {
+			for(int i=0; i < monkeys.size(); i++) {
 		        
-		        int newX = v.getPosX();
-		        int newY = v.getPosY();
+		        int newX = monkeys.get(i).getPosX();
+		        int newY = monkeys.get(i).getPosY();
 		        
 		        	
 		        int[] newPosition = positionSuivanteAleatoire(map, monkeys, newX, newY);
@@ -70,28 +65,21 @@ public class MoveTimer {
 		        newX = newPosition[0];
 		        newY = newPosition[1];
 		        
-		        v.setPosX(newX);
-		        v.setPosY(newY);
+		        monkeys.get(i).setPosX(newX);
+		        monkeys.get(i).setPosY(newY);
 		        
-		        Element e = em.find(Element.class, k);
+		        Element e = em.find(Element.class, monkeys.get(i).getId());
 		        e.setPosX(newX);
 		        e.setPosY(newY);
 		        em.merge(e);
-		        
-		        Element e2 = em.find(Element.class, k);
-		        
-			        
-			        
-		        
-		        
-			});
+       
+			}
 			communication.sendMonkeys(monkeys);
 			monkeys.clear();
-			bottles.clear();
 		}    
 	}
 	
-	private int[] positionSuivanteAleatoire(int[][] map, HashMap<Integer,Monkey> monkeys,  int x, int y) {
+	private int[] positionSuivanteAleatoire(int[][] map, ArrayList<Monkey> monkeys,  int x, int y) {
 		
 		int alea = (int)(Math.random() * 4);
 		int[] result = new int[2];
@@ -119,7 +107,7 @@ public class MoveTimer {
         	newY = y;
         } else {
 	        for(int i = 0; i < monkeys.size(); i++) {
-        		if(monkeys.get(i + 6).getPosX() == newX && monkeys.get(i + 6).getPosY() == newY) {
+        		if(monkeys.get(i).getPosX() == newX && monkeys.get(i).getPosY() == newY) {
         			newX = x;
                 	newY = y;
         		}

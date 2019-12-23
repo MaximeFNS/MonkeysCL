@@ -25,7 +25,9 @@ public class Element implements Serializable{
 	protected String type;
 	protected String state;
 	protected Island island;
-	
+	protected int energy;
+	protected int visibility;
+
 	@ManyToOne
 	@JoinColumn(name="ELEMENT_ISLAND_ID")
 	public Island getIsland() {
@@ -93,6 +95,23 @@ public class Element implements Serializable{
 
 	public void setState(String etat) {
 		state = etat;
+	}
+	
+	public int getEnergy() {
+		return energy;
+	}
+	
+	public void setEnergy(int energy) {
+		this.energy = energy;
+		
+	}
+	
+	public int getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(int visibility) {
+		this.visibility = visibility;
 	}
 	
 	/* (non-Javadoc)

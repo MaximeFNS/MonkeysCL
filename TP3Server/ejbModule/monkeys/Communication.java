@@ -55,7 +55,7 @@ public class Communication implements CommunicationLocal {
     }
 
 	@Override
-	public void sendMonkeys(HashMap<Integer,Monkey> monkeys) {
+	public void sendMonkeys(ArrayList<Monkey> monkeys) {
 		StreamMessage message = context.createStreamMessage();
 		try {
 			message.setJMSType("monkeys");
@@ -64,18 +64,18 @@ public class Communication implements CommunicationLocal {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		monkeys.forEach((k,v) -> {
+		for(int i=0; i < monkeys.size(); i++) {
 			
 			try {
-				message.writeInt(v.getId());
-				message.writeInt(v.getPosX());
-				message.writeInt(v.getPosY());
+				message.writeInt(monkeys.get(i).getId());
+				message.writeInt(monkeys.get(i).getPosX());
+				message.writeInt(monkeys.get(i).getPosY());
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-		});
+		}
 		context.createProducer().send(topic, message);
 	}
 	
@@ -92,17 +92,19 @@ public class Communication implements CommunicationLocal {
 	}
 
 	@Override
-	public void sendPirate(String deplacement, String id, String state) {
-		sendStringMessage(deplacement, id, "move", state);
+	public void sendPirate(String deplacement, String id, String state, int energy) {
+		sendStringMessage(deplacement, id, "move", state, energy);
 		
 	}
 	
-	private void sendStringMessage(String chaine, String id, String type, String state){
+	private void sendStringMessage(String chaine, String id, String type, String state, int energy){
     	StreamMessage message = context.createStreamMessage();
     	try {
     		message.setStringProperty("id", id);
     		message.setJMSType(type);
     		message.writeString(chaine);
+    		message.writeString(state);
+    		message.writeInt(energy);
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -110,21 +112,22 @@ public class Communication implements CommunicationLocal {
     }
 
 	@Override
-	public void sendRum(HashMap<Integer, Rum> bottles) {
-		bottles.forEach((k,v) -> {
-			StreamMessage message = context.createStreamMessage();
-			try {
-				message.setStringProperty("id", String.valueOf(v.getId()));
-				message.setJMSType("rum");
-				message.writeInt(v.getPosX());
-				message.writeInt(v.getPosY());
-				message.writeInt(v.getVisibility());
-			} catch (JMSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	public void sendRum(ArrayList<Rum> bottles) {
+		StreamMessage message = context.createStreamMessage();
+		try {
+			message.setJMSType("rum");
+			message.writeInt(bottles.size());
+			for(int i=0; i < bottles.size(); i++) {
+				message.writeInt(bottles.get(i).getId());
+				message.writeInt(bottles.get(i).getPosX());
+				message.writeInt(bottles.get(i).getPosY());
+				message.writeInt(bottles.get(i).getVisibility());	
 			}
 			context.createProducer().send(topic, message);
-		});
+		} catch (JMSException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 	}
 

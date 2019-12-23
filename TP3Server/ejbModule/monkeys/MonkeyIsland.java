@@ -30,9 +30,9 @@ public class MonkeyIsland implements MIRemote {
 	
 	private HashMap<Integer, Pirate> pirates = new HashMap<>();
 	
-	private HashMap<Integer,Monkey> monkeys = new HashMap<Integer,Monkey>();
+	private ArrayList<Monkey> monkeys = new ArrayList<>();
 	
-	private HashMap<Integer,Rum> bottles = new HashMap<Integer,Rum>();
+	private ArrayList<Rum> bottles = new ArrayList<>();
 	
 	@EJB
 	Configuration configuration;
@@ -44,6 +44,7 @@ public class MonkeyIsland implements MIRemote {
      * Default constructor
      */
     public MonkeyIsland() {}
+    
 
 	@Override
 	public Pirate subscribe(String id) {
@@ -62,30 +63,77 @@ public class MonkeyIsland implements MIRemote {
 	@Override
 	public void move(String id, String deplacement) {
 		int idInt = Integer.valueOf(id);
+		int energy = 0;
+		monkeys.clear();
+		bottles.clear();
+		boolean retour = true;
+		int j = 1;
+		while(retour) {
+			myElement = em.find(Element.class, j);
+			if (myElement!=null) {
+				if(myElement.getType().contentEquals("Monkey")) {
+					monkeys.add(new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
+				}
+				
+				if(myElement.getType().contentEquals("Rum")) {
+					bottles.add(new Rum(j, myElement.getPosX(),myElement.getPosY(),myElement.getVisibility(),25));
+				}
+				
+				j++;
+		}
+			else {
+				retour = false;
+			}
+		}
 		
 		Pirate newPirate = pirates.get(idInt);
 		if(!newPirate.getState().equals("DEAD")) {
 			switch(deplacement) {
 			  case "-1-0":
 				  newPirate.setPosX(newPirate.getPosX()-1);
+				  newPirate.setEnergy(newPirate.getEnergy() -1);
+				  energy = -1;
 			    break;
 			  case "0-1":
 				  newPirate.setPosY(newPirate.getPosY()-1);
+				  newPirate.setEnergy(newPirate.getEnergy() -1);
+				  energy = -1;
 				break;
 			  case "1-0":
 				  newPirate.setPosX(newPirate.getPosX()+1);
+				  newPirate.setEnergy(newPirate.getEnergy() -1);
+				  energy = -1;
 				break;
 			  case "0--1":
 				  newPirate.setPosY(newPirate.getPosY()+1);
+				  newPirate.setEnergy(newPirate.getEnergy() -1);
+				  energy = -1;
 				break;
 			  default:
 			}
 			
+			if(newPirate.getEnergy() == 0) {
+				newPirate.setState("DEAD");
+    			deplacement = "0-0";
+			}
 		
 			for(int i = 0; i < monkeys.size(); i++) {
-        		if(monkeys.get(i + 6).getPosX() == newPirate.getPosX() && monkeys.get(i + 6).getPosY() == newPirate.getPosY()) {
+        		if(monkeys.get(i).getPosX() == newPirate.getPosX() && monkeys.get(i).getPosY() == newPirate.getPosY()) {
         			newPirate.setState("DEAD");
         			deplacement = "0-0";
+        			newPirate.setEnergy(0);
+        			energy = 0;
+        		}
+	        }
+			for(int i = 0; i < bottles.size(); i++) {
+        		if(bottles.get(i).getPosX() == newPirate.getPosX() && bottles.get(i).getPosY() == newPirate.getPosY() 
+        				&& bottles.get(i).getVisibility() == 1 && newPirate.getState() != "DEAD") {
+        			bottles.get(i).setVisibility(0);
+        			newPirate.setEnergy(newPirate.getEnergy()+25);
+        			energy = 25;
+        			Element e = em.find(Element.class, bottles.get(i).getId());
+        			e.setVisibility(0);
+        			em.merge(e);
         		}
 	        }
 			pirates.replace(idInt, newPirate);
@@ -96,15 +144,17 @@ public class MonkeyIsland implements MIRemote {
 			toUpdate.setPosY(newPirate.getPosY());
 			toUpdate.setType("Pirate");
 			toUpdate.setState(newPirate.getState());
+			toUpdate.setEnergy(newPirate.getEnergy());
 			toUpdate.setIsland(myLand);
-			System.out.println(newPirate.getState());
 			em.merge(toUpdate);
-			communication.sendPirate(deplacement, id, newPirate.getState());
+			communication.sendPirate(deplacement, id, newPirate.getState(), energy);
 			communication.sendPirates();
+			communication.sendRum(bottles);
 			
 		} else {
-			communication.sendPirate("0-0", id, newPirate.getState());
+			communication.sendPirate("0-0", id, newPirate.getState(), energy);
 			communication.sendPirates();
+			communication.sendRum(bottles);
 		}
 	}
 	
@@ -152,12 +202,12 @@ public class MonkeyIsland implements MIRemote {
 			if (myElement!=null) {
 				if(myElement.getType().contentEquals("Monkey")) {
 					isMonkeyPresent = true;
-					monkeys.put(j, new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
+					monkeys.add(new Monkey(j,myElement.getPosX(),myElement.getPosY(),50));
 				}
 				
 				if(myElement.getType().contentEquals("Rum")) {
 					isBottlePresent = true;
-					bottles.put(j, new Rum(j, myElement.getPosX(),myElement.getPosY(),1,25));
+					bottles.add(new Rum(j, myElement.getPosX(),myElement.getPosY(),1,25));
 				}
 				
 				j++;
@@ -219,7 +269,7 @@ public class MonkeyIsland implements MIRemote {
 		}
 		int[] position = positionAleatoire();
 		Monkey monkey = new Monkey(j, position[0], position[1], 50);
-		monkeys.putIfAbsent(j,monkey);
+		monkeys.add(monkey);
 		
 		Element e = new Element();
 		
@@ -235,18 +285,18 @@ public class MonkeyIsland implements MIRemote {
 		int[] result = new int[2];
 		int x = random.nextInt(8)+1;
 		int y = random.nextInt(8)+1;
-		if(monkeys != null) {
-			monkeys.forEach((k,v) -> {
-				if(v.getPosX() == x && v.getPosY() == y) {
+		if(bottles != null) {
+			for(int i=0; i < bottles.size(); i++){
+				if(bottles.get(i).getPosX() == x && bottles.get(i).getPosY() == y) {
 					positionAleatoire();
 				} 
-			});
-			if(bottles != null) {
-				bottles.forEach((k,v) -> {
-					if(v.getPosX() == x && v.getPosY() == y) {
+			}
+			if(monkeys != null) {
+				for(int i=0; i < monkeys.size(); i++) {
+					if(monkeys.get(i).getPosX() == x && monkeys.get(i).getPosY() == y) {
 						positionAleatoire();
 					} 
-				});
+				}
 			}
 		}
 		
@@ -271,7 +321,7 @@ public class MonkeyIsland implements MIRemote {
 		int[] position = positionAleatoire();
 		Rum rum = new Rum(j, position[0], position[1], 1,25);
 		rum.setType("Rum");
-		bottles.putIfAbsent(j,rum);
+		bottles.add(rum);
 		
 		Element e = new Element();
 		
@@ -279,29 +329,21 @@ public class MonkeyIsland implements MIRemote {
 		e.setPosY(rum.getPosY());
 		e.setType("Rum");
 		e.setIsland(myLand);
+		e.setVisibility(1);
 		em.persist(e);
 	}
 
 	@Override
 	public int getEnergyIfRum(Pirate pirate) {
-		ArrayList<Rum> allRums = new ArrayList<>();
-		Element e = null;
-		for(int k = 2; k < 20;k++) {
-			e = em.find(Element.class, k);
-			if(e!=null) {
-				if(e.getType()=="Rum") {
-					Rum rum = new Rum(e.getId(),e.getPosX(),e.getPosY(),100,25);
-					allRums.add(rum);
-				}
-			}
-			e = null;
-		}
+		
 		int energy = 0;
-		for(int i = 0; i<allRums.size();i++) {
-			if(pirate.getPosX()==allRums.get(i).getPosX() && pirate.getPosY()==allRums.get(i).getPosY()) {
-				Rum rum = bottles.get(allRums.get(i).getId());
+		for(int i = 0; i<bottles.size();i++) {
+			if(pirate.getPosX()==bottles.get(i).getPosX() && pirate.getPosY()==bottles.get(i).getPosY()) {
+				Rum rum = bottles.get(bottles.get(i).getId());
 				energy = rum.getEnergy();
 				//TODO : Change Visibility
+				
+				
 			}
 		}
 		return energy;
