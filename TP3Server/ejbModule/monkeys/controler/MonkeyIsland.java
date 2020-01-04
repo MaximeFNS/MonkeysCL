@@ -1,4 +1,4 @@
-package monkeys;
+package monkeys.controler;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -11,6 +11,14 @@ import javax.ejb.EJB;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import monkeys.communication.Communication;
+import monkeys.models.Element;
+import monkeys.models.Island;
+import monkeys.models.Monkey;
+import monkeys.models.Pirate;
+import monkeys.models.Rum;
+import monkeys.models.Treasure;
 
 /**
  * Session Bean implementation class MonkeyIsland
@@ -252,8 +260,24 @@ public class MonkeyIsland implements MIRemote {
 		communication.sendMonkeys(monkeys);
 		
 		communication.sendPirates();
+		
+		createTreasure();
+		
 	}
 	
+	private void createTreasure() {
+		int[] pos = positionAleatoire();
+		Treasure treasure = new Treasure(pos[0], pos[1], 0);
+		
+		Element e = new Element();
+		e.setPosX(treasure.getPosX());
+		e.setPosY(treasure.getPosY());
+		e.setType(treasure.getType());
+		e.setIsland(myLand);
+		em.persist(e);
+	}
+
+
 	private void createMonkey() {
 		boolean retour = true;
 		Integer j = 2;

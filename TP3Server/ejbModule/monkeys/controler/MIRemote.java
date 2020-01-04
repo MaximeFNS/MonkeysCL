@@ -1,8 +1,10 @@
-package monkeys;
+package monkeys.controler;
 
 import java.util.ArrayList;
 
 import javax.ejb.Remote;
+
+import monkeys.models.Pirate;
 
 /**
  * @author Mickael Clavreul

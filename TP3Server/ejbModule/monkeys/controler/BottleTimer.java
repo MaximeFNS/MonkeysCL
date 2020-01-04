@@ -1,4 +1,4 @@
-package monkeys;
+package monkeys.controler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +9,10 @@ import javax.ejb.Stateless;
 import javax.ejb.Timer;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import monkeys.communication.Communication;
+import monkeys.models.Element;
+import monkeys.models.Rum;
 
 @Stateless
 public class BottleTimer {

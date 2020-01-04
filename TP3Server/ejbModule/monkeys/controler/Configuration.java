@@ -1,4 +1,4 @@
-package monkeys;
+package monkeys.controler;
 
 import java.io.IOException;
 import java.io.InputStream;

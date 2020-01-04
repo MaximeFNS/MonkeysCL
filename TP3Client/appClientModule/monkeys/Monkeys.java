@@ -31,6 +31,8 @@ import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 
 import guybrush.view.EnergyView;
 import guybrush.view.Fenetre;
+import monkeys.controler.MIRemote;
+import monkeys.models.Pirate;
 
 /**
  * @author Mickael Clavreul
@@ -262,6 +264,19 @@ public class Monkeys implements MessageListener{
 			} else if (message.getJMSType().contains("pirateLeft")) {
 				int id = Integer.valueOf(message.getStringProperty("id"));
 				fenetre.suppressionPirate(id);
+			} else if (message.getJMSType().contains("treasure")) {
+				fenetre.removeBounty();
+				StreamMessage streamMessage = (StreamMessage) message;
+					int posX = streamMessage.readInt();
+					int posY = streamMessage.readInt();
+					int intv = streamMessage.readInt();
+					boolean v = false;
+					if(intv==1) {
+						v = true;
+					}
+					
+					fenetre.creationTresor(posX, posY, v);
+				
 			}
 			
 		} catch (JMSException e) {

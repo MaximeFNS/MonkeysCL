@@ -1,4 +1,4 @@
-package monkeys;
+package monkeys.models;
 
 import javax.persistence.Entity;
 

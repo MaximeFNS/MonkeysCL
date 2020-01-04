@@ -1,4 +1,4 @@
-package monkeys;
+package monkeys.communication;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -12,6 +12,10 @@ import javax.jms.JMSContext;
 import javax.jms.JMSException;
 import javax.jms.StreamMessage;
 import javax.jms.Topic;
+
+import monkeys.models.Monkey;
+import monkeys.models.Rum;
+import monkeys.models.Treasure;
 
 /**
  * Session Bean implementation class Communication
@@ -141,5 +145,21 @@ public class Communication implements CommunicationLocal {
 			e.printStackTrace();
 		}
     	context.createProducer().send(topic, message);
+	}
+
+	@Override
+	public void sendTreasure(Treasure treasure) {
+		StreamMessage message = context.createStreamMessage();
+		try {
+			message.setJMSType("treasure");
+				message.writeInt(treasure.getPosX());
+				message.writeInt(treasure.getPosY());
+				message.writeInt(treasure.getVisibility());	
+			context.createProducer().send(topic, message);
+		} catch (JMSException e1) {
+
+			e1.printStackTrace();
+		}
+		
 	}
 }
