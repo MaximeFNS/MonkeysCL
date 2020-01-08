@@ -1,4 +1,4 @@
-package monkeys.controler;
+package monkeys;
 
 import javax.ejb.Local;
 

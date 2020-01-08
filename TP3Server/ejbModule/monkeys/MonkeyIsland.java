@@ -1,4 +1,4 @@
-package monkeys.controler;
+package monkeys;
 
 import java.awt.Dimension;
 import java.util.ArrayList;

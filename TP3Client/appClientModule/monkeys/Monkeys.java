@@ -31,7 +31,7 @@ import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 
 import guybrush.view.EnergyView;
 import guybrush.view.Fenetre;
-import monkeys.controler.MIRemote;
+import monkeys.MIRemote;
 import monkeys.models.Pirate;
 
 /**

@@ -1,5 +1,5 @@
 
-package monkeys.controler;
+package monkeys;
 
 import java.io.IOException;
 import java.util.ArrayList;
